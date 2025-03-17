@@ -1,149 +1,191 @@
-import { useState, useEffect } from "react";
-import { assets } from "../assets/assets";
+import { useState } from "react";
 import uploadarea from "../assets/upload_area.png";
+import { useContext } from "react";
+import { AppContext } from "../context/AppContext";
+import axios from "axios";
+import { toast } from "react-toastify";
+
+
 
 const MyProfile = () => {
-  // Safely parse localStorage data
-  let storeData = {};
-  try {
-    storeData = JSON.parse(localStorage.getItem("userprofile")) || {};
-  } catch (error) {
-    console.error("Error parsing user profile from localStorage", error);
+
+    
+ const {userData, setUserData, token, loadUserProfileData } = useContext(AppContext)
+  const [isEdit, setIsEdit] = useState(false);
+  const [image, setImage] = useState(false)
+
+  const updateUserProfileData = async () => {
+
+    try {
+       const fromData = new FormData()
+
+       fromData.append('name',userData.name)
+       fromData.append('phone',userData.phone)
+       fromData.append('address',JSON.stringify(userData.address))
+       fromData.append('gender',userData.gender)
+       fromData.append('dob',userData.dob)
+
+      image && fromData.append('image',image)  
+
+
+      const   {data} = await axios.post( "http://localhost:4000/api/user/update-profile", FormData, {headers:{token}})
+      if (data.success) {
+        toast.success(data.message)
+        await loadUserProfileData()
+        setIsEdit(false)
+        setImage(false)
+        
+      } else {
+        toast.error(data.message)
+      }
+    } catch (error) {
+      console.log(error)
+      toast.error(error.message)
+      
+    }
+
   }
+  // let storeData = {};
+  // try {
+  //   storeData = JSON.parse(localStorage.getItem("userprofile")) || {};
+  // } catch (error) {
+  //   console.error("Error parsing user profile from localStorage", error);
+  // }
 
   // State for user data
-  const [userData, setUserData] = useState(() => ({
-    name: storeData.name || "",
-    email: storeData.email || "",
-    image: storeData.image || assets.profile_pic, // Fixed: lowercase "image"
-    Phone: storeData.phone || "+910000000",
-    address: storeData.address || {
-      line1: "Address 1",
-      line2: "Address 2",
-    },
-    gender: storeData.gender || "select",
-    dob: storeData.dob || "2000-01-20",
-  }));
+  // const [userData, setUserData] = useState(() => ({
+  //   name: storeData.name || "",
+  //   email: storeData.email || "",
+  //   image: storeData.image || assets.profile_pic, // Fixed: lowercase "image"
+  //   Phone: storeData.phone || "+910000000",
+  //   address: storeData.address || {
+  //     line1: "Address 1",
+  //     line2: "Address 2",
+  //   },
+  //   gender: storeData.gender || "select",
+  //   dob: storeData.dob || "2000-01-20",
+  // }));
 
-  const [isEdit, setIsEdit] = useState(false);
+  // const [isEdit, setIsEdit] = useState(false);
 
-  // Fetch profile from API on mount
+  // // Fetch profile from API on mount
 
-  const fetchProfile = async () => {
-    try {
-      const token = localStorage.getItem("token");
+  // const fetchProfile = async () => {
+  //   try {
+  //     const token = localStorage.getItem("token");
 
-      if (!token) {
-        console.error("No token found, skipping profile fetch");
-        return;
-      }
+  //     if (!token) {
+  //       console.error("No token found, skipping profile fetch");
+  //       return;
+  //     }
 
-      const response = await fetch("http://localhost:4000/api/user/find/profile", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+  //     const response = await fetch("http://localhost:4000/api/user/find/profile", {
+  //       method: "GET",
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch user data");
-      }
+  //     if (!response.ok) {
+  //       throw new Error("Failed to fetch user data");
+  //     }
 
-      const data = await response.json();
+  //     const data = await response.json();
 
-         if (!data || typeof data !== "object") {
-    throw new Error("Invalid user data format");
-  }
+  //        if (!data || typeof data !== "object") {
+  //   throw new Error("Invalid user data format");
+  // }
 
-      setUserData((prev) => ({
-        ...prev,
-        name: data.name || prev.name,
-        email: data.email || prev.email,
-        image: data.image || prev.image,
-      }));
-    } catch (error) {
-      console.error("Error fetching profile:", error);
-    }
-  };
+  //     setUserData((prev) => ({
+  //       ...prev,
+  //       name: data.name || prev.name,
+  //       email: data.email || prev.email,
+  //       image: data.image || prev.image,
+  //     }));
+  //   } catch (error) {
+  //     console.error("Error fetching profile:", error);
+  //   }
+  // };
 
-  useEffect(() => {
+  // useEffect(() => {
   
-    fetchProfile();
-  }, []);
+  //   fetchProfile();
+  // }, []);
 
-  // Save user data to localStorage when it changes
-  useEffect(() => {
-    localStorage.setItem("userprofile", JSON.stringify(userData));
-  }, [userData]);
+  // // Save user data to localStorage when it changes
+  // useEffect(() => {
+  //   localStorage.setItem("userprofile", JSON.stringify(userData));
+  // }, [userData]);
 
   // Image Upload Handler
-  const handleImageUpload = async (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const formData = new FormData();
-      formData.append("photo", file);
+  // const handleImageUpload = async (event) => {
+  //   const file = event.target.files[0];
+  //   if (file) {
+  //     const formData = new FormData();
+  //     formData.append("photo", file);
 
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.error("No token found. User might not be logged in.");
-          return;
-        }
+  //     try {
+  //       const token = localStorage.getItem("token");
+  //       if (!token) {
+  //         console.error("No token found. User might not be logged in.");
+  //         return;
+  //       }
         
-        const response = await fetch("http://localhost:4000/api/user/profile-image/update", {
-          method: "PUT",
-          headers: { Authorization: `Bearer ${token}` },
-          body: formData,
-        });
+  //       const response = await fetch("http://localhost:4000/api/user/profile-image/update", {
+  //         method: "PUT",
+  //         headers: { Authorization: `Bearer ${token}` },
+  //         body: formData,
+  //       });
 
-        const result = await response.json();
-        console.log("Upload result:", result); 
-        // Debugging
-       // (result.success && result.image_url)
-        if (response.ok && result.success)  {
+  //       const result = await response.json();
+  //       console.log("Upload result:", result); 
+  //       // Debugging
+  //      // (result.success && result.image_url)
+  //       if (response.ok && result.success)  {
 
-          fetchProfile()
+  //         fetchProfile()
         
-        } else {
-          console.error("Error updating profile picture:", result.message);
-        }
-      } catch (error) {
-        console.error("Error uploading image:", error.message);
-      }
-    }
-  };
+  //       } else {
+  //         console.error("Error updating profile picture:", result.message);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error uploading image:", error.message);
+  //     }
+  //   }
+  // };
 
-  return (
+  return userData && (
     <div className="max-w-lg flex flex-col gap-2 text-sm">
       {/* ------Profile Photo Upload------ */}
-      <div className="flex flex-col space-y-4 p-4">
-
-        <h2 className="text-xl font-semibold">Profile Photo</h2>
-
-        <div className="w-36 h-36 rounded-full overflow-hidden border-4 border-gray-300">
-          <img src={userData.image || uploadarea} alt="Profile" className="w-full h-full object-cover" />
+     
+    
+    {isEdit ?
+         <label htmlFor="image">
+        <div className="inline-block relative cursor-pointer">
+          <img className="w-36 rounded opacity-100" src={image ? URL.createObjectURL(image) : userData.image} alt="" />
+          <img className="w-36  " src={image ? '' : uploadarea} alt="" />
         </div>
 
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleImageUpload}
-          className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600 cursor-pointer"
-        />
-      </div>
+        <input onChange={(e)=> setImage(e.target.files[0])}  type="file"  id="image" hidden />
 
+       </label>
+         :<img  className="w-36 " src={userData.image  } alt="Profile"  />
+      }
+     
+    
+    
       {/* ------User Info------ */}
-      {isEdit ? (
+      {isEdit ?  
         <input
           className="bg-gray-50 text-3xl font-medium max-w-60 mt-4"
           type="text"
           value={userData.name}
           onChange={(e) => setUserData((prev) => ({ ...prev, name: e.target.value }))}
         />
-      ) : (
+       : 
         <p className="font-medium text-3xl text-neutral-800 mt-4">{userData.name}</p>
-      )}
+    }
 
       <hr className="bg-zinc-400 h-[1px] border-none" />
 
@@ -154,29 +196,29 @@ const MyProfile = () => {
         <p className="text-blue-500">{userData.email}</p>
 
         <p className="font-medium">Phone :</p>
-        {isEdit ? (
+        {isEdit ? 
           <input
             className="bg-gray-100 max-w-52"
             type="text"
-            value={userData.Phone}
-            onChange={(e) => setUserData((prev) => ({ ...prev, Phone: e.target.value }))}
+            value={userData.phone} 
+            onChange={(e) => setUserData((prev) => ({ ...prev, phone: e.target.value }))}
           />
-        ) : (
-          <p className="text-blue-400">{userData.Phone}</p>
-        )}
+         : 
+          <p className="text-blue-400">{userData.phone}</p>
+        }
 
         <p className="font-medium">Address :</p>
-        {isEdit ? (
+        {isEdit ? 
           <p>
             <input
               className="bg-gray-50"
               onChange={(e) =>
                 setUserData((prev) => ({
                   ...prev,
-                  address: { ...prev.address, line1: e.target.value },
+                  address: { ...prev.address,  line1: e.target.value },
                 }))
               }
-              value={userData.address.line1}
+              value={userData.address.line1} 
             />
             <br />
             <input
@@ -184,19 +226,19 @@ const MyProfile = () => {
               onChange={(e) =>
                 setUserData((prev) => ({
                   ...prev,
-                  address: { ...prev.address, line2: e.target.value },
+                  address : { ...prev.address, line2: e.target.value },
                 }))
               }
-              value={userData.address.line2}
+              //value={userData.address.line2} 
             />
           </p>
-        ) : (
+        : 
           <p className="text-gray-500">
-            {userData.address.line1}
+           {userData.address?.line1}  
             <br />
-            {userData.address.line2}
+            {userData.address?.line2}
           </p>
-        )}
+        }
       </div>
 
       {/* ------Basic Info------ */}
@@ -232,12 +274,12 @@ const MyProfile = () => {
 
       {/* ------Edit Button------ */}
       <div className="mt-10">
-        <button
-          className="border border-primary px-8 py-2 rounded-full hover:bg-primary hover:text-white transition-all"
-          onClick={() => setIsEdit(!isEdit)}
-        >
-          {isEdit ? "Save Information" : "Edit"}
-        </button>
+      {isEdit
+        ? <button className="border border-primary px-8 py-2 rounded-full hover:bg-primary hover:text-white transition-all" onClick={updateUserProfileData}> save Information </button>
+         : <button className="border border-primary px-8 py-2 rounded-full hover:bg-primary hover:text-white transition-all" onClick={() => setIsEdit(true)}> Edit </button>
+
+      }
+      
       </div>
     </div>
   );
