@@ -13,12 +13,16 @@ const AppContextProvider = (props) => {
     localStorage.getItem("token") ? localStorage.getItem("token") : false
   );
   const [userData, setUserData] = useState(false);
+  console.log("profile data",userData);
+  
 
   const getDoctorsData = async () => {
     try {
       const { data } = await axios.get("http://localhost:4000/api/doctor/list");
       if (data.success) {
         setDoctors(data.doctors);
+        console.log("Fetched Doctors Data:", data); 
+
       } else {
         toast.error(data.message);
       }
@@ -40,7 +44,7 @@ const AppContextProvider = (props) => {
       if (data.success) {
         setUserData(data.userData);
 
-        console.log(data.useState);
+        //console.log(data.useState);
         
       } else {
         toast.error(data.message);
@@ -53,7 +57,7 @@ const AppContextProvider = (props) => {
 
 
   const value = {
-    doctors,
+    doctors,getDoctorsData,
     currencySymbol,
     token,
     setToken,

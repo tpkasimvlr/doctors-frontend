@@ -28,7 +28,10 @@ const MyProfile = () => {
       image && fromData.append('image',image)  
 
 
-      const   {data} = await axios.post( "http://localhost:4000/api/user/update-profile", FormData, {headers:{token}})
+      const {data} = await axios.post('http://localhost:4000/api/user/update-profile ', fromData,   
+         {headers:{token}})
+
+         
       if (data.success) {
         toast.success(data.message)
         await loadUserProfileData()
@@ -161,13 +164,13 @@ const MyProfile = () => {
      
     
     {isEdit ?
-         <label htmlFor="image">
+         <label htmlFor="image"> 
         <div className="inline-block relative cursor-pointer">
-          <img className="w-36 rounded opacity-100" src={image ? URL.createObjectURL(image) : userData.image} alt="" />
-          <img className="w-36  " src={image ? '' : uploadarea} alt="" />
+          <img className="w-36 rounded " src={image ? URL.createObjectURL(image) : userData.image} alt="" />
+          <img className="w-36 absolute top-[14px] -right-[147px]  " src={image ? '' : uploadarea} alt="" />
         </div>
 
-        <input onChange={(e)=> setImage(e.target.files[0])}  type="file"  id="image" hidden />
+        <input onChange={(e)=> setImage(e.target.files[0])}  type="file"  id="image" hidden />~
 
        </label>
          :<img  className="w-36 " src={userData.image  } alt="Profile"  />

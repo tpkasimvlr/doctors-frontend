@@ -11,7 +11,11 @@ const Doctors = () => {
   const { doctors} = useContext(AppContext)
   const navigate = useNavigate()
 
+  console.log("doctors name",doctors);
+  
+
   const applyFilter = () => {
+    console.log("speciality name",speciality);
     if (speciality) {
       setFilterDoc(doctors.filter(doc => doc.speciality === speciality))
     } else {
@@ -23,12 +27,12 @@ const Doctors = () => {
     applyFilter()
   },[doctors,speciality])
 
-  console.log(doctors);
+  console.log(filterDoc);
   
 
 
 
-  console.log(speciality);
+
   
   return (
    
@@ -47,7 +51,7 @@ const Doctors = () => {
       </div>
       <div className="w-full grid grid-cols-auto gap-4 gap-y-6">
         {
-          filterDoc.map((item,index)=>(
+          filterDoc?.map((item,index)=>(
             <div onClick={()=>navigate(`/appointment/${item._id}`)} className="border border-blue-200 rounded-xl overflow-hidden cursor-pointer hover:translate-y-[-10px] transition-all duration-600"  key={index}>
               <img  className="bg-blue-50" src={item.image} alt="" />
               <div className="p-4">

@@ -1,98 +1,10 @@
-// import { NavLink, useNavigate } from "react-router-dom";
-// import { assets } from "../assets/assets";
-// //import axios from "axios";
-// import { useEffect, useState } from "react";
-
-// const Navbar = () => {
-//   const navigate = useNavigate();
-//   const token = localStorage.getItem("token");
-//   const [tokenData, setTokenData] = useState(null);
-
-//   console.log("masssage",token);
-
-//   useEffect(() => {
-
-//     if (token) {
-//       setTokenData(token)
-//     }
-
-//   },[token])
-   
-  
-//   const handleLogout = () => {
-//     localStorage.removeItem("token"); // Remove token from local storage
-//     setTokenData(null);
-//     navigate("/login"); // Redirect to login page
-//   };
-
-
-  
-
-
-//   return (
-//     <div className="flex items-center justify-between text-sm my-5 border-b border-b-gray-400">
-//       <img
-//         onClick={() => navigate("/")}
-//         className="w-44 cursor-pointer"
-//         src={assets.logo}
-//         alt=""
-//       />
-//       <ul className="hidden md:flex items-start gap-5 font-medium">
-//         <NavLink to="/">
-//           <li className="py-1">HOME</li>
-//         </NavLink>
-//         <NavLink to="/doctors">
-//           <li className="py-1">ALL DOCTORS</li>
-//         </NavLink>
-//         <NavLink to="/about">
-//           <li className="py-1">ABOUT</li>
-//         </NavLink>
-//         <NavLink to="/contact">
-//           <li className="py-1">CONTACT</li>
-//         </NavLink>
-//       </ul>
-
-//       <div className="flex items-center gap-4">
-//         {tokenData ?(
-//           <div className="flex items-center gap-2 cursor-pointer group relative">
-//             <img className="w-8 rounded-full" src={assets.profile_pic} alt="Profile" />
-//             <img className="w-2.5" src={assets.dropdown_icon} alt="Dropdown" />
-//             <div className="absolute top-0 right-0 pt-14 text-base font-medium text-gray-600 z-20 hidden group-hover:block">
-//               <div className="min-w-48 bg-stone-100 rounded flex flex-col gap-4 p-4">
-//                 <p onClick={() => navigate("/my-profile")} className="hover:text-black cursor-pointer">
-//                   My Profile
-//                 </p>
-//                 <p onClick={() => navigate("/my-appointments")} className="hover:text-black cursor-pointer">
-//                   My Appointment
-//                 </p>
-//                 <p onClick={handleLogout} className="hover:text-black cursor-pointer">
-//                   Logout
-//                 </p>
-//               </div>
-//             </div>
-//           </div>
-//         ) : (
-//           <button
-//             onClick={() => navigate("/login")}
-//             className="bg-primary text-white px-8 py-3 rounded-full font-light hidden md:block"
-//           >
-//             Create account
-//           </button>
-//         )}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Navbar;
-
 
 
 import { NavLink, useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { AppContext } from "../context/AppContext";
 //import { useEffect, useState } from "react";
-import uploadarea from "../assets/upload_area.png";
+
 import { useContext, useState } from "react";
 
 
@@ -100,7 +12,7 @@ const Navbar = () => {
   const navigate = useNavigate();
 
 
-   const {token,setToken } = useContext(AppContext)
+   const {token,setToken,userData } = useContext(AppContext)
   const [shoMenu, setShoMenu] = useState(false)
 
 
@@ -170,10 +82,12 @@ const Navbar = () => {
       </ul>
 
       <div className="flex items-center gap-4">
-        {token ? (
+        {
+        token && userData
+         ? 
 
           <div className="flex items-center gap-2 cursor-pointer group relative">
-            <img className="w-8 h-8 rounded-full" src={uploadarea} alt="Profile" />
+            <img className="w-8 h-8 rounded-full" src={userData.image} alt="Profile" />
             <img className="w-2.5" src={assets.dropdown_icon} alt="Dropdown" />
             <div className="absolute top-0 right-0 pt-14 text-base font-medium text-gray-600 z-20 hidden group-hover:block">
               <div className="min-w-48 bg-stone-100 rounded flex flex-col gap-4 p-4">
@@ -183,7 +97,7 @@ const Navbar = () => {
               </div>
             </div>
           </div>
-        ) : (
+        : 
           
           <button
             onClick={() => navigate("/login")}
@@ -191,7 +105,7 @@ const Navbar = () => {
           >
             Create account
           </button>
-        )}
+        }
       </div>
     </div>
   );
